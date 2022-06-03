@@ -2,6 +2,8 @@ package com.spring.inventory.config
 
 import com.spring.inventory.jwt.*
 import com.spring.inventory.services.CustomUserDetailsService
+import com.spring.inventory.services.UserService
+import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,11 +17,14 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig:  WebSecurityConfigurerAdapter(){
+class WebSecurityConfig:  WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var jwtSecret: JwtSecret
 
@@ -32,9 +37,12 @@ class WebSecurityConfig:  WebSecurityConfigurerAdapter(){
     @Autowired
     lateinit var jwtUtil: JwtUtil
 
+    @Autowired
+    lateinit var userService: UserService
+
     override fun configure(http: HttpSecurity?) {
-        val jwtAuthenticationFilter = JwtAuthenticationFilter(authenticationManagerBean(), jwtSecret.encryptSecret(), jwtUtil)
-        jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/public")
+        val jwtAuthenticationFilter = JwtAuthenticationFilter(authenticationManagerBean(), jwtSecret.encryptSecret(), jwtUtil, userService)
+        jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/public/signIn")
         http
             ?.csrf()
             ?.disable()
@@ -43,17 +51,38 @@ class WebSecurityConfig:  WebSecurityConfigurerAdapter(){
             ?.and()
             ?.userDetailsService(userDetailsServiceBean())
             ?.authorizeRequests()
-            ?.antMatchers( "/api/v1/public/**")
+            ?.antMatchers( "/", "/api/v1/public/**", "/api/v1/user/**")
             ?.permitAll()
             ?.antMatchers("/api/v1/reader/**")
-            ?.hasAuthority("READER")
+            ?.hasAnyAuthority("READER")
             ?.antMatchers("/api/v1/moderator/**")
-            ?.hasAuthority("MODERATOR")
+            ?.hasAnyAuthority("READER", "MODERATOR")
+            ?.antMatchers("/api/v1/admin/**")
+            ?.hasAuthority("ADMIN")
             ?.anyRequest()
             ?.authenticated()
             ?.and()
+            ?.addFilterBefore(CustomCorsFilter(), jwtAuthenticationFilter::class.java)
             ?.addFilter(jwtAuthenticationFilter)
-            ?.addFilterAfter(JwtValidator(jwtSecret.encryptSecret(), jwtConfig, userDetailsService), jwtAuthenticationFilter::class.java)
+            ?.addFilterAfter(JwtValidator(jwtSecret.encryptSecret(), jwtConfig, userDetailsService, jwtUtil), jwtAuthenticationFilter::class.java)
+            //?.cors()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val corsConfig = CorsConfiguration()
+        corsConfig.allowedOrigins = listOf("http://localhost:3000")
+        corsConfig.allowedMethods = listOf("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
+        corsConfig.allowCredentials = true
+        corsConfig.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type");
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", corsConfig)
+        return source
+    }
+
+    @Bean
+    fun getMapper(): ModelMapper? {
+        return ModelMapper()
     }
 
     @Bean
@@ -66,7 +95,6 @@ class WebSecurityConfig:  WebSecurityConfigurerAdapter(){
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
-        //auth.authenticationProvider(daoAuthenticationProvider())
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
     }
 

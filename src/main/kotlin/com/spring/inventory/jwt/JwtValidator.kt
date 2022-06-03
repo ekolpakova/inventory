@@ -2,13 +2,16 @@ package com.spring.inventory.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.spring.inventory.services.CustomUserDetailsService
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.stream.Collectors
 import javax.crypto.SecretKey
@@ -16,7 +19,8 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JwtValidator(private val jwtSecret: SecretKey, jwtConfig: JwtConfig, userDetailsService: CustomUserDetailsService): OncePerRequestFilter() {
+@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
+class JwtValidator(private val jwtSecret: SecretKey, jwtConfig: JwtConfig, userDetailsService: CustomUserDetailsService, val jwtUtil: JwtUtil): OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -58,11 +62,11 @@ class JwtValidator(private val jwtSecret: SecretKey, jwtConfig: JwtConfig, userD
                     SecurityContextHolder.getContext().authentication = authReq
                     filterChain.doFilter(request, response)
                 }
-                catch (e: JwtException) {
-                    response.status = HttpStatus.UNAUTHORIZED.value()
-                    val data: HashMap<String, String> = HashMap()
-                    data["message"] = "Сессия истекла. Зайдите снова"
-                    ObjectMapper().writeValue(response.outputStream, data)
+                    catch (e: ExpiredJwtException) {
+                        response.status = HttpStatus.FORBIDDEN.value()
+                        val data: HashMap<String, String> = HashMap()
+                        data["message"] = "Сессия истекла. Зайдите снова"
+                        ObjectMapper().writeValue(response.outputStream, data)
                 }
             }
             else {

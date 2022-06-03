@@ -14,4 +14,12 @@ class RoleService {
         return roleRepository.save(role)
     }
 
+    fun getRoleById(id: Int): Role {
+        return roleRepository.getById(id)
+    }
+
+    fun getRoleByName(name: String): Role {
+        return roleRepository.getRoleByName(name)
+    }
+
 }

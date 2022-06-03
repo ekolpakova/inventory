@@ -6,28 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 
+
+
+
 @Service
 class InventoryItemService {
     @Autowired
     lateinit var inventoryItemRepository: InventoryItemRepository
 
     fun saveInventoryItem(inventoryItem: InventoryItem): InventoryItem {
-        return inventoryItemRepository.save(inventoryItem)
+        return inventoryItemRepository.saveAndFlush(inventoryItem)
     }
 
     fun getInventoryItems(): List<InventoryItem> {
         return inventoryItemRepository.findAll()
     }
 
-    fun getInventoryItemById(id: Int): Optional<InventoryItem> {
-        return inventoryItemRepository.findById(id)
+    fun getInventoryItemById(id: Int): InventoryItem {
+        return inventoryItemRepository.findById(id).orElse(null)
     }
 
-    /*fun updateInventoryItem(inventoryItem: InventoryItem): InventoryItem {
-        return inventoryItemRepository.updateInventoryItem(inventoryItem)
-    }*/
-
-    fun deleteInventoryItem(inventoryItem: InventoryItem) {
-        return inventoryItemRepository.delete(inventoryItem)
+    fun deleteInventoryItem(id: Int) {
+        return inventoryItemRepository.deleteById(id)
     }
 }

@@ -19,6 +19,10 @@ class UserService {
         return userRepository.findById(id)
     }
 
+    fun getUserByUsername(username: String): User {
+        return userRepository.findByUsername(username)
+    }
+
     fun saveUser(user: User): User {
         return userRepository.save(user)
     }

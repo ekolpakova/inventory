@@ -1,6 +1,7 @@
 package com.spring.inventory.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.spring.inventory.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -8,15 +9,21 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
+import java.util.stream.Collectors
 import javax.crypto.SecretKey
 import javax.servlet.FilterChain
+import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-open class JwtAuthenticationFilter(private var customAuthenticationManager: AuthenticationManager, secret: SecretKey, private val jwtUtil: JwtUtil): UsernamePasswordAuthenticationFilter() {
+@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
+open class JwtAuthenticationFilter(private var customAuthenticationManager: AuthenticationManager, secret: SecretKey, private val jwtUtil: JwtUtil, private val userService: UserService): UsernamePasswordAuthenticationFilter() {
 
     var authManager: AuthenticationManager? = null
 
@@ -24,9 +31,9 @@ open class JwtAuthenticationFilter(private var customAuthenticationManager: Auth
         authManager = customAuthenticationManager
     }
 
-    //AuthenticationManager checks if principal is valid
     @Transactional
-    override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
+    @org.springframework.lang.Nullable
+    override fun attemptAuthentication(@RequestBody request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
         val username = request?.getParameter("username")
         val password = request?.getParameter("password")
         val authentication = UsernamePasswordAuthenticationToken(username, password)
@@ -42,10 +49,31 @@ open class JwtAuthenticationFilter(private var customAuthenticationManager: Auth
         val accessToken = jwtUtil.generateAccessToken(authentication!!.name, authentication.authorities)
         val refreshToken = jwtUtil.generateRefreshToken(authentication.name, authentication.authorities)
 
-        val tokens: HashMap<String, String> = HashMap()
+        /*val authorities = authentication.authorities as List<Map<String, String>>
+
+        val simpleGrantedAuthorities = authorities.stream()
+            .map { a -> SimpleGrantedAuthority(a["authority"]) }
+            .collect(Collectors.toSet())
+
+        val roles = simpleGrantedAuthorities.map { it.authority }*/
+
+        val user = userService?.getUserByUsername(authentication.name)
+        val roles = user?.roles as List<String>
+        val tokens: HashMap<String, Any> = HashMap()
+
         tokens["access_token"] = accessToken
         tokens["refresh_token"] = refreshToken
+        tokens["roles"] = mutableListOf(roles)
+        tokens["id"] = user.id.toString()
+        tokens["username"] = user.username.toString()
 
+        val refreshCookie = Cookie("refresh_token", refreshToken)
+        refreshCookie.maxAge = 604800
+        refreshCookie.isHttpOnly = true /* can handle by js - false */
+        refreshCookie.secure = true /* https only - false */
+        refreshCookie.path = "/"
+
+        response?.addCookie(refreshCookie)
         response?.contentType = MediaType.APPLICATION_JSON_VALUE
         ObjectMapper().writeValue(response?.outputStream, tokens)
     }
