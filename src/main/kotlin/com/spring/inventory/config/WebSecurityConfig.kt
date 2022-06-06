@@ -82,7 +82,9 @@ class WebSecurityConfig:  WebSecurityConfigurerAdapter() {
 
     @Bean
     fun getMapper(): ModelMapper? {
-        return ModelMapper()
+        val modelMapper = ModelMapper()
+        modelMapper.getConfiguration().setSkipNullEnabled(true)
+        return modelMapper
     }
 
     @Bean

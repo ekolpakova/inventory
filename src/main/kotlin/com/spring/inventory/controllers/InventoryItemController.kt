@@ -1,18 +1,23 @@
 package com.spring.inventory.controllers
 
 import com.spring.inventory.dtos.Category
+import com.spring.inventory.dtos.ContractDTO
+import com.spring.inventory.dtos.InventoryItemDTO
+import com.spring.inventory.dtos.SourceOfFundsDTO
 import com.spring.inventory.entities.Contract
 import com.spring.inventory.entities.InventoryItem
+import com.spring.inventory.entities.SourceOfFunds
+import com.spring.inventory.pojos.ContractConverter
 import com.spring.inventory.repositories.InventoryItemRepository
 import com.spring.inventory.services.ContractService
 import com.spring.inventory.services.InventoryItemService
+import org.mapstruct.factory.Mappers
+import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.criteria.*
-import javax.validation.Valid
 
 
 @RestController
@@ -21,6 +26,116 @@ import javax.validation.Valid
 public class InventoryItemController(val inventoryItemService: InventoryItemService, val contractService: ContractService, val inventoryItemRepository: InventoryItemRepository) {
     @Autowired
     lateinit var em: EntityManager
+
+    @Autowired
+    lateinit var modelMapper: ModelMapper
+
+    @Transactional
+    @PutMapping(value = ["/inventoryDTO/{itemId}"], consumes = ["application/json"], produces = ["application/json"])
+    fun updateItemDTO(@PathVariable itemId: Int, @RequestBody contract: Contract): InventoryItem? {
+        val item: InventoryItem = this.inventoryItemService.getInventoryItemById(itemId)
+        convertToItemDTO(item)
+        val con: Contract = contractService.getContractById(contract.id!!)
+        convertToContractDTO(con)
+        item.contract = con
+        this.inventoryItemService.saveInventoryItem(item)
+        con.inventoryItems?.clear()
+        con.inventoryItems?.add(item)
+        //val i = con.inventoryItems?.get(itemId)
+        /*val i = con.inventoryItems?.find { it.id == itemId }*/
+        //i?.contract = con
+        /*i?.contract = con
+        i?.commentary = "Test II"*/
+        //con.inventoryItems?.clear()
+        //con.inventoryItems?.add(item)
+        this.contractService.saveContract(con)
+        //this.inventoryItemService.saveInventoryItem(i!!)
+        return item
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/getContract123")
+    fun getTeamByName(id: Int): Contract? {
+        val entity: InventoryItem = inventoryItemService.getInventoryItemById(id)
+        modelMapper.map(entity, InventoryItemDTO::class.java)
+        return entity.contract
+    }
+
+    //this works
+    @PutMapping("/contract")
+    fun getContract(@RequestParam itemId: Int, @RequestParam id: Int): InventoryItemDTO {
+        val item: InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+        val con = contractService.getContractById(id)
+
+        item.name = "Test III"
+        item.contract = con
+
+        val i = convertToItemDTO(item)
+        val c = convertToContractDTO(con)
+
+        i.contractDTO = c
+        //val z = c.inventoryItems?.find { it.id == itemId }
+        //z?.contractDTO = c
+
+        //inventoryItemService.saveInventoryItem(item)
+        return i
+    }
+
+    @PutMapping("/sourceOfFunds")
+    fun getSourceOfFunds(@RequestParam itemId: Int, @RequestParam id: Int) {
+        var item: InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+        var con = contractService.getContractById(id)
+
+        item.name = "Test III"
+        item.contract = con
+
+        val i = convertToItemDTO(item)
+        val c = convertToContractDTO(con)
+
+        i.contractDTO = c
+        //val z = c.inventoryItems?.find { it.id == itemId }
+        //z?.contractDTO = c
+
+        //inventoryItemService.saveInventoryItem(i)
+        //return i
+    }
+
+    @GetMapping("c")
+    fun c() {
+        val conv = Mappers.getMapper(ContractConverter::class.java)
+        val contract = Contract("Doc1")
+        val contractDto = conv.convertToDTO(contract)
+        println(contractDto)
+    }
+
+    /*fun Contract.toContractDTO() = ContractDTO(
+        id = "$id".toInt(),
+        name = "$name"
+    );*/
+
+    fun convertToItemDTO(item: InventoryItem): InventoryItemDTO {
+        val itemDTO = modelMapper.map(item, InventoryItemDTO::class.java)
+        itemDTO.contractDTO = convertToContractDTO(item.contract!!)
+        return itemDTO
+    }
+
+    fun convertToContractDTO(contract: Contract): ContractDTO  {
+        return modelMapper.map(contract, ContractDTO::class.java)
+    }
+
+    fun convertToSourceDTO(source: SourceOfFunds): SourceOfFundsDTO  {
+        return modelMapper.map(source, SourceOfFundsDTO::class.java)
+    }
+
+    @PutMapping("/changeContract")
+    fun addRoleToUser(@RequestParam id: Int, @RequestParam conId: Int): Contract? {
+        val item = inventoryItemService.getInventoryItemById(id)
+        item.contract = null
+        val con = contractService.getContractById(conId)
+        item.contract = con
+        inventoryItemService.saveInventoryItem(item)
+        return item.contract
+    }
 
     //lateinit var inventoryItemService: InventoryItemService
 
@@ -40,7 +155,7 @@ public class InventoryItemController(val inventoryItemService: InventoryItemServ
     }
 
     @PutMapping("/updateInventoryItemCell")
-    fun updateInventoryItemCell(@RequestParam id: Int, @RequestParam col: String, @RequestBody colVal: String): Int {
+    fun updateInventoryItemCell(@RequestParam id: Int, @RequestParam col: String, @RequestParam colVal: String): Int {
         val builder = em.criteriaBuilder
 
         val update: CriteriaUpdate<InventoryItem> = builder.createCriteriaUpdate(InventoryItem::class.java)

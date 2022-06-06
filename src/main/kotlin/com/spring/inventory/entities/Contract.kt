@@ -10,15 +10,16 @@ import javax.persistence.*
 @Entity
 @Data
 @Table(name = "contracts")
-class Contract {
+class Contract(@Column(name = "name")
+               var name: String? = null) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
 
-    @Column(name = "name")
-    var name: String? = null
+    /*@Column(name = "name")
+    var name: String? = null*/
 
     @JsonManagedReference
-    @OneToMany
+    @OneToMany(mappedBy = "contract", cascade = [CascadeType.ALL])
     var inventoryItems: MutableList<InventoryItem> ? = null
 }

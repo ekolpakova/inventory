@@ -10,13 +10,17 @@ import java.util.*
 @Service
 class ContractService {
     @Autowired
-    lateinit var contractsRepository: ContractRepository
+    lateinit var contractRepository: ContractRepository
+
+    fun saveContract(contract: Contract): Contract {
+        return contractRepository.saveAndFlush(contract)
+    }
 
     fun getContracts(): MutableList<Contract> {
-        return contractsRepository.findAll()
+        return contractRepository.findAll()
     }
 
     fun getContractById(id: Int): Contract {
-        return contractsRepository.findById(id).orElse(null)
+        return contractRepository.findById(id).orElse(null)
     }
 }

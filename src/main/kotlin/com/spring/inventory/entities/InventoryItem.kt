@@ -3,6 +3,8 @@ package com.spring.inventory.entities
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.spring.inventory.dtos.ContractDTO
 import lombok.Data
 import org.springframework.format.annotation.DateTimeFormat
 import java.sql.Date
@@ -19,7 +21,7 @@ class InventoryItem {
     var id: Int? = null
 
     @Column(name = "serial_number")
-    var serialNumber: Int? = null
+    var serialNumber: String? = null
 
     //@DateTimeFormat(pattern = "dd.mm.yyyy")
     //@Temporal(TemporalType.DATE)
@@ -65,15 +67,13 @@ class InventoryItem {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "contract_id")
     var contract: Contract ? = null
 
     @ManyToOne(fetch = FetchType.EAGER)
     var sourceOfFunds: SourceOfFunds ? = null
 
-    @Column(name = "inventory_number")
-    var inventoryNumber: String? = null
-
     @Column(name = "number_in_classroom")
-    var numberInClassroom: Int? = null
+    var numberInClassroom: String? = null
 
 }

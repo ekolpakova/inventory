@@ -14,4 +14,12 @@ class SourcesOfFundsService {
     fun getSourcesOfFunds(): MutableList<SourceOfFunds> {
         return sourceOfFundsRepository.findAll()
     }
+
+    fun saveSourceOfFunds(sourceOfFunds: SourceOfFunds): SourceOfFunds {
+        return sourceOfFundsRepository.saveAndFlush(sourceOfFunds)
+    }
+
+    fun getSourceOfFundsById(id: Int): SourceOfFunds {
+        return sourceOfFundsRepository.findById(id).orElse(null)
+    }
 }

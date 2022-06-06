@@ -1,24 +1,23 @@
 package com.spring.inventory.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import lombok.*
+import lombok.Data
+import lombok.Getter
+import lombok.NoArgsConstructor
+import lombok.Setter
 
 @Data
 @NoArgsConstructor
-@Getter @Setter
-class InventoryItemDTO {
+@Getter
+@Setter
+class SourceOfFundsDTO {
     @Getter
     @Setter
     val id: Int ? = null
     @Getter
     @Setter
     val name: String ? = null
-    @JsonProperty("contract")
     @Getter
     @Setter
-    var contractDTO: ContractDTO ? = null
-    @JsonProperty("sourceOfFunds")
-    @Getter
-    @Setter
-    var sourceOfFundsDTO: SourceOfFundsDTO ? = null
+    val inventoryItems: List<InventoryItemDTO> ? = null
 }

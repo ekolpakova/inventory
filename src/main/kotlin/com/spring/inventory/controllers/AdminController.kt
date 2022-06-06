@@ -20,7 +20,17 @@ class AdminController {
     fun addRoleToUser(@RequestParam username: String, @RequestParam name: String): MutableList<Role>? {
         val user = userService.getUserByUsername(username)
         val role = roleService.getRoleByName(name)
-        user.roles?.add(role)
+        if (user.roles?.contains(role) == false) {
+            user.roles?.add(role)
+            userService.saveUser(user)
+        }
+        return user.roles
+    }
+
+    @DeleteMapping("/removeRolesFromUser")
+    fun removeRolesFromUser(@RequestParam username: String): MutableList<Role>? {
+        val user = userService.getUserByUsername(username)
+        user.roles?.clear()
         userService.saveUser(user)
         return user.roles
     }
