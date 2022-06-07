@@ -16,7 +16,6 @@ class TestController {
 
     @GetMapping("/tests")
     fun tests() {
-        val res = testRepo.findAll()
-        println(res)
+        println(testRepo.findAll())
     }
 }
