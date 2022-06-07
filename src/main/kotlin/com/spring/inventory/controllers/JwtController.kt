@@ -32,7 +32,7 @@ import kotlin.collections.HashMap
 
 @RestController
 @RequestMapping("/api/v1/public")
-@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
+@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000", "https://inventory-react.netlify.app"])
 class JwtController(val jwtSecret: SecretKey) {
     @Autowired
     lateinit var authenticationManager: AuthenticationManager
