@@ -11,7 +11,7 @@ import javax.validation.constraints.*
 @Data
 @Validated
 @Table(name = "users")
-class User {
+class ser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
