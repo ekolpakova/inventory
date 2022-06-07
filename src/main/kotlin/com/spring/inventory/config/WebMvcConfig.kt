@@ -11,8 +11,8 @@ class WebMvcConfig: WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000")
-            .allowedMethods("GET", "POST")
+            .allowedOrigins("http://localhost:3000", "https://inventory-react.netlify.app")
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true)
     }
 }
