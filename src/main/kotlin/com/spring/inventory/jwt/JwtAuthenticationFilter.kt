@@ -86,7 +86,8 @@ open class JwtAuthenticationFilter(private var customAuthenticationManager: Auth
         response?.status = HttpStatus.UNAUTHORIZED.value()
         val data: HashMap<String, Any> = HashMap()
         data["timestamp"] = Calendar.getInstance().time
-        data["exception"] = exception?.message.toString()
+        data["exception"] = /*exception?.message.toString() */ exception?.stackTrace.toString()
+
         ObjectMapper().writeValue(response?.outputStream, data)
     }
 }
