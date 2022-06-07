@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/v1/public")
 class TestController {
     @Autowired
-    lateinit var testRepo: TestRepository;
+    lateinit var testRepo: TestRepository
 
     @GetMapping("/tests")
-    fun tests(): MutableList<Test> {
-        return testRepo.findAll()
+    fun tests() {
+        val res = testRepo.findAll()
+        println(res)
     }
 }
