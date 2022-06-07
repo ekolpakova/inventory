@@ -16,6 +16,6 @@ class TestController {
 
     @GetMapping("/tests")
     fun tests() {
-        println(testRepo.findAll())
+        println("Test")
     }
 }
