@@ -15,7 +15,7 @@ class TestController {
     lateinit var testRepo: TestRepository;
 
     @GetMapping("/tests")
-    fun tests(): String {
-        return "List"
+    fun tests(): MutableList<Test> {
+        return testRepo.findAll()
     }
 }
