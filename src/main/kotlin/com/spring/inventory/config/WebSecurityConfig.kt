@@ -71,7 +71,7 @@ class WebSecurityConfig:  WebSecurityConfigurerAdapter() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val corsConfig = CorsConfiguration()
-        corsConfig.allowedOrigins = listOf("http://localhost:3000")
+        corsConfig.allowedOrigins = listOf("http://localhost:3000", "https://inventory-react.netlify.app")
         corsConfig.allowedMethods = listOf("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
         corsConfig.allowCredentials = true
         corsConfig.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type");

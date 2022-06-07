@@ -22,7 +22,7 @@ import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
+@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000", "https://inventory-react.netlify.app"])
 open class JwtAuthenticationFilter(private var customAuthenticationManager: AuthenticationManager, secret: SecretKey, private val jwtUtil: JwtUtil, private val userService: UserService): UsernamePasswordAuthenticationFilter() {
 
     var authManager: AuthenticationManager? = null
