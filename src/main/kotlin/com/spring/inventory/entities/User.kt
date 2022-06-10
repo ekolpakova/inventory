@@ -60,9 +60,9 @@ class User {
     var responsiblePerson: MutableList<User>? = null*/
 
     //@Lob
-    @Type(type="org.hibernate.type.BinaryType")
+    //@Type(type="org.hibernate.type.BinaryType")
     @Column(name = "image")
-    var image: ByteArray? = null
+    var image: String? = null
 
     constructor(username: String, password: String /*birthDate: Date, firstName: String, surname: String, patronym: String, email: String*/) {
         this.username = username

@@ -54,7 +54,7 @@ class UserController {
 
 
     @GetMapping("user/image")
-    fun findUserImage(@RequestParam username: String): ByteArray? {
+    fun findUserImage(@RequestParam username: String): String? {
         val user = userService.getUserByUsername(username)
         return user.image
     }

@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.util.*
 import java.util.stream.Collectors
 import javax.crypto.SecretKey
@@ -179,18 +180,28 @@ class JwtController(val jwtSecret: SecretKey) {
 
 
     @PutMapping("/addUserImage", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun addUserImage(username: String, image: MultipartFile): ByteArray? {
-        //val user = userService.getUserById(id.toInt())
+    fun addUserImage(username: String, image: MultipartFile): String? {
         val user = userService.getUserByUsername(username)
-        user.image = image.bytes
+        user.image = image.originalFilename
         userService.saveUser(user)
         return user.image
     }
 
     @GetMapping("user/image")
-    fun findUserImage(@RequestParam username: String): ByteArray? {
+    fun findUserImage(@RequestParam username: String): String? {
         val user = userService.getUserByUsername(username)
         return user.image
     }
+
+    @GetMapping("/logout")
+    fun logout(@CookieValue(value = "refresh_token") refreshToken: String, response: HttpServletResponse) {
+        val cookie = Cookie("refresh_token", null)
+        cookie.secure = true
+        cookie.isHttpOnly = true
+        cookie.path = "/"
+        cookie.maxAge = 0
+        response.addCookie(cookie)
+    }
+
 
 }

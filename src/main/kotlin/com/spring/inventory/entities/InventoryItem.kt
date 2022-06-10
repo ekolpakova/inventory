@@ -73,6 +73,11 @@ class InventoryItem {
     @ManyToOne(fetch = FetchType.EAGER)
     var sourceOfFunds: SourceOfFunds ? = null
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fix_id")
+    var fix: Fix ? = null
+
     @Column(name = "number_in_classroom")
     var numberInClassroom: String? = null
 

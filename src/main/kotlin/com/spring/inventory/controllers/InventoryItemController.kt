@@ -5,11 +5,12 @@ import com.spring.inventory.dtos.ContractDTO
 import com.spring.inventory.dtos.InventoryItemDTO
 import com.spring.inventory.dtos.SourceOfFundsDTO
 import com.spring.inventory.entities.Contract
+import com.spring.inventory.entities.Fix
 import com.spring.inventory.entities.InventoryItem
 import com.spring.inventory.entities.SourceOfFunds
 import com.spring.inventory.pojos.ContractConverter
-import com.spring.inventory.repositories.InventoryItemRepository
 import com.spring.inventory.services.ContractService
+import com.spring.inventory.services.FixService
 import com.spring.inventory.services.InventoryItemService
 import org.mapstruct.factory.Mappers
 import org.modelmapper.ModelMapper
@@ -23,7 +24,7 @@ import javax.persistence.criteria.*
 @RestController
 @Transactional
 @RequestMapping("/api/v1/moderator")
-public class InventoryItemController(val inventoryItemService: InventoryItemService, val contractService: ContractService, val inventoryItemRepository: InventoryItemRepository) {
+public class InventoryItemController(val inventoryItemService: InventoryItemService, val contractService: ContractService, val fixService: FixService) {
     @Autowired
     lateinit var em: EntityManager
 
@@ -180,6 +181,17 @@ public class InventoryItemController(val inventoryItemService: InventoryItemServ
         val con = contractService.getContractById(contract.id!!)
         item.contract = con
         inventoryItemService.saveInventoryItem(item)
+        return item
+    }
+
+    @PutMapping(value = ["/inventory/fix/{itemId}"], consumes = ["application/json"], produces = ["application/json"])
+    fun updateFixItem(@PathVariable itemId: Int, @RequestBody fix: Fix): InventoryItem {
+        val item: InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+        val f: Fix = fixService.saveFix(fix)
+        item.fix = f
+        f.inventoryItems?.add(item)
+        inventoryItemService.saveInventoryItem(item)
+        fixService.saveFix(f)
         return item
     }
 
