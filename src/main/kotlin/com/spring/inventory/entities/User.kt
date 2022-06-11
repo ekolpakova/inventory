@@ -55,14 +55,18 @@ class User {
     @OneToMany
     var inventoryItems: MutableList<InventoryItem> ? = null
 
-    /*@OneToMany
+    @OneToMany
     @Column(name = "responsible_person")
-    var responsiblePerson: MutableList<User>? = null*/
+    var responsiblePerson: MutableList<User>? = null
 
     //@Lob
     //@Type(type="org.hibernate.type.BinaryType")
     @Column(name = "image")
     var image: String? = null
+
+    @JsonIgnore
+    @OneToMany(cascade = [CascadeType.ALL])
+    var fixes: MutableList<Fix> ? = null
 
     constructor(username: String, password: String /*birthDate: Date, firstName: String, surname: String, patronym: String, email: String*/) {
         this.username = username

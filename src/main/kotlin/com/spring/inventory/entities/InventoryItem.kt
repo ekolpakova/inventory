@@ -75,10 +75,10 @@ class InventoryItem {
     @JoinColumn(name = "fix_id")
     var fix: Fix ? = null
 
-    /*@JsonIgnore
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    var responsiblePerson: User ? = null*/
+    var responsiblePerson: User ? = null
 
     @Column(name = "number_in_classroom")
     var numberInClassroom: String? = null
