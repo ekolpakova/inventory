@@ -46,9 +46,6 @@ class InventoryItem {
     @JoinColumn(name = "id", insertable = false, updatable = false)
     val contract: Contract ? = null*/
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    var responsiblePerson: User? = null
-
     @Column(name = "commentary")
     var commentary: String? = null
 
@@ -77,6 +74,11 @@ class InventoryItem {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fix_id")
     var fix: Fix ? = null
+
+    /*@JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    var responsiblePerson: User ? = null*/
 
     @Column(name = "number_in_classroom")
     var numberInClassroom: String? = null
