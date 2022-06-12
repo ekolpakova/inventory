@@ -197,15 +197,6 @@ public class InventoryItemController(val inventoryItemService: InventoryItemServ
 
     @GetMapping("/searchItem")
     fun search(@RequestParam param: String, @RequestParam value: String): MutableList<InventoryItem>? {
-        /*val builder = em.criteriaBuilder
-
-        val query = builder.createQuery(InventoryItem::class.java)
-        val root: Root<InventoryItem> = query.from(InventoryItem::class.java)
-
-        val getCol: Path<String> = root.get(param)
-        query.where(builder.like(getCol, "%$value%"))
-
-        return em.createQuery(query).resultList*/
         val builder = em.criteriaBuilder
         val cr: CriteriaQuery<InventoryItem> = builder.createQuery(InventoryItem::class.java)
         val root: Root<InventoryItem> = cr.from(InventoryItem::class.java)

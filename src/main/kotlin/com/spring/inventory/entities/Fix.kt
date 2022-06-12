@@ -21,7 +21,7 @@ class Fix {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "responsible_person_id")
     var responsiblePerson: User ? = null
 
     @OneToMany(mappedBy = "fix", cascade = [CascadeType.ALL])

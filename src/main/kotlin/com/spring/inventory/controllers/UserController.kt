@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/moderator")
 @CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
 class UserController {
     @Autowired

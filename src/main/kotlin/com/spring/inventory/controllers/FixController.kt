@@ -77,8 +77,8 @@ class FixController {
         return 1
     }
 
-    @PostMapping("/addFix/{itemId}")
-    fun addFix(@PathVariable itemId: Int, @RequestBody fix: Fix): Fix {
+    @PostMapping("/addFix")
+    fun addFix(@RequestBody fix: Fix): Fix {
         return fixService.addFix(fix)
     }
 
