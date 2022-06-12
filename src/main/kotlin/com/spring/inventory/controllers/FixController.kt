@@ -3,8 +3,10 @@ package com.spring.inventory.controllers
 import com.spring.inventory.entities.Contract
 import com.spring.inventory.entities.Fix
 import com.spring.inventory.entities.InventoryItem
+import com.spring.inventory.entities.User
 import com.spring.inventory.services.FixService
 import com.spring.inventory.services.InventoryItemService
+import com.spring.inventory.services.UserService
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -20,6 +22,9 @@ import javax.persistence.criteria.Root
 class FixController {
     @Autowired
     lateinit var fixService: FixService
+
+    @Autowired
+    lateinit var userService: UserService
 
     @Autowired
     lateinit var inventoryItemService: InventoryItemService
@@ -78,8 +83,28 @@ class FixController {
     }
 
     @PostMapping("/addFix")
-    fun addFix(@RequestBody fix: Fix): Fix {
+    fun addFix(@RequestBody f: Fix, @RequestParam userId: Int, @RequestParam itemId: Int): Fix {
+        val fix:Fix = f
+        val user:User = userService.getUserById(userId)
+        val item:InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+
+        fix.responsiblePerson = user
+        fix.inventoryItems?.add(item)
+
+        fixService.saveFix(fix)
         return fixService.addFix(fix)
+    }
+
+    @PutMapping("/updateFix/{fixId}")
+    fun updateFix(@PathVariable fixId: Int, @RequestParam userId: Int, @RequestParam itemId: Int) {
+        val fix:Fix = fixService.findFixById(fixId)
+        val user:User = userService.getUserById(userId)
+        val item:InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+
+        fix.responsiblePerson = user
+        fix.inventoryItems?.add(item)
+
+        fixService.saveFix(fix)
     }
 
 }

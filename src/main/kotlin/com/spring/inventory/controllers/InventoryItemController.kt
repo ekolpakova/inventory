@@ -4,14 +4,12 @@ import com.spring.inventory.dtos.Category
 import com.spring.inventory.dtos.ContractDTO
 import com.spring.inventory.dtos.InventoryItemDTO
 import com.spring.inventory.dtos.SourceOfFundsDTO
-import com.spring.inventory.entities.Contract
-import com.spring.inventory.entities.Fix
-import com.spring.inventory.entities.InventoryItem
-import com.spring.inventory.entities.SourceOfFunds
+import com.spring.inventory.entities.*
 import com.spring.inventory.pojos.ContractConverter
 import com.spring.inventory.services.ContractService
 import com.spring.inventory.services.FixService
 import com.spring.inventory.services.InventoryItemService
+import com.spring.inventory.services.UserService
 import org.mapstruct.factory.Mappers
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +22,7 @@ import javax.persistence.criteria.*
 @RestController
 @Transactional
 @RequestMapping("/api/v1/moderator")
-public class InventoryItemController(val inventoryItemService: InventoryItemService, val contractService: ContractService, val fixService: FixService) {
+public class InventoryItemController(val inventoryItemService: InventoryItemService, val contractService: ContractService, val fixService: FixService, val userService: UserService) {
     @Autowired
     lateinit var em: EntityManager
 
@@ -185,14 +183,18 @@ public class InventoryItemController(val inventoryItemService: InventoryItemServ
     }
 
     @PutMapping(value = ["/inventory/fix/{itemId}"], consumes = ["application/json"], produces = ["application/json"])
-    fun updateFixItem(@PathVariable itemId: Int, @RequestBody fix: Fix): InventoryItem {
+    fun updateFixItem(@PathVariable itemId: Int, @RequestBody fix: Fix, @RequestParam userId: Int): Fix? {
         val item: InventoryItem = inventoryItemService.getInventoryItemById(itemId)
+        val user: User = userService.getUserById(userId)
         val f: Fix = fixService.saveFix(fix)
         item.fix = f
+        item.responsiblePerson = user
         f.inventoryItems?.add(item)
+        user.inventoryItems?.add(item)
         inventoryItemService.saveInventoryItem(item)
         fixService.saveFix(f)
-        return item
+        userService.saveUser(user)
+        return item.fix
     }
 
     @GetMapping("/searchItem")

@@ -19,11 +19,10 @@ class Fix {
     @Column(name = "phone")
     val phone: String ? = null
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsible_person_id")
     var responsiblePerson: User ? = null
 
-    @OneToMany(mappedBy = "fix", cascade = [CascadeType.ALL])
-    var inventoryItems: MutableList<InventoryItem> ? = null
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "fixes")
+    val inventoryItems: MutableList<InventoryItem> ? = null
 }

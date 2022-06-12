@@ -83,4 +83,9 @@ class InventoryItem {
     @Column(name = "number_in_classroom")
     var numberInClassroom: String? = null
 
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "inventory_items_fixes", joinColumns = [JoinColumn(name = "inventory_items_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "fix_id", referencedColumnName = "id")])
+    var fixes: MutableList<Fix>? = null
+
 }

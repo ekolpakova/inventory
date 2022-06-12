@@ -15,8 +15,8 @@ class UserService {
         return userRepository.findAll()
     }
 
-    fun getUserById(id: Int): Optional<User> {
-        return userRepository.findById(id)
+    fun getUserById(id: Int): User {
+        return userRepository.findById(id).orElse(null)
     }
 
     fun getUserByUsername(username: String): User {

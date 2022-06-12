@@ -39,7 +39,7 @@ class UserController {
 
     @PreAuthorize("hasAuthority('USERS:WRITE')")
     @GetMapping("/userById/{id}")
-    fun findUserById(@PathVariable id: Int): Optional<User> {
+    fun findUserById(@PathVariable id: Int): User {
         return userService.getUserById(id)
     }
 
