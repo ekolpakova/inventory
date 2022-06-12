@@ -84,8 +84,7 @@ class InventoryItem {
     var numberInClassroom: String? = null
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "inventory_items_fixes", joinColumns = [JoinColumn(name = "inventory_items_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "fix_id", referencedColumnName = "id")])
-    var fixes: MutableList<Fix>? = null
+    @OneToMany(cascade = [CascadeType.ALL])
+    var fixes: MutableList<Fix> ? = null
 
 }

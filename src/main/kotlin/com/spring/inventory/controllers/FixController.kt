@@ -52,8 +52,7 @@ class FixController {
         val f: Fix = this.fixService.findFixById(fix.id!!)
         item.fix = f
         this.inventoryItemService.saveInventoryItem(item)
-        f.inventoryItems?.clear()
-        f.inventoryItems?.add(item)
+        f.inventoryItem = item
         this.fixService.saveFix(f)
         return item
     }
@@ -89,7 +88,8 @@ class FixController {
         val item:InventoryItem = inventoryItemService.getInventoryItemById(itemId)
 
         fix.responsiblePerson = user
-        fix.inventoryItems?.add(item)
+        fix.inventoryItem = item
+        //.inventoryItems?.add(item)
 
         fixService.saveFix(fix)
         return fixService.addFix(fix)
@@ -102,7 +102,7 @@ class FixController {
         val item:InventoryItem = inventoryItemService.getInventoryItemById(itemId)
 
         fix.responsiblePerson = user
-        fix.inventoryItems?.add(item)
+        fix.inventoryItem = item
 
         fixService.saveFix(fix)
     }

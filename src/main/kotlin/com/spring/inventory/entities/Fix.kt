@@ -23,6 +23,7 @@ class Fix {
     @JoinColumn(name = "responsible_person_id")
     var responsiblePerson: User ? = null
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "fixes")
-    val inventoryItems: MutableList<InventoryItem> ? = null
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "inventory_items_id")
+    var inventoryItem: InventoryItem ? = null
 }

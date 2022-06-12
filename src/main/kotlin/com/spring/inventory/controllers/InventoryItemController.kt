@@ -189,7 +189,7 @@ public class InventoryItemController(val inventoryItemService: InventoryItemServ
         val f: Fix = fixService.saveFix(fix)
         item.fix = f
         item.responsiblePerson = user
-        f.inventoryItems?.add(item)
+        //f.inventoryItems?.add(item)
         user.inventoryItems?.add(item)
         inventoryItemService.saveInventoryItem(item)
         fixService.saveFix(f)
