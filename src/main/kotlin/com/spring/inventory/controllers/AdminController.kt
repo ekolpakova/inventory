@@ -1,6 +1,7 @@
 package com.spring.inventory.controllers
 
 import com.spring.inventory.entities.Role
+import com.spring.inventory.entities.User
 import com.spring.inventory.services.RoleService
 import com.spring.inventory.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,11 @@ class AdminController {
 
     @Autowired
     lateinit var roleService: RoleService
+
+    @GetMapping("/users")
+    fun findAllUsers(): List<User> {
+        return userService.getUsers()
+    }
 
     @PutMapping("/addRoleToUser")
     fun addRoleToUser(@RequestParam username: String, @RequestParam name: String): MutableList<Role>? {

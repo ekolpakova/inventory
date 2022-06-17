@@ -19,6 +19,7 @@ class Fix {
     @Column(name = "phone")
     val phone: String ? = null
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsible_person_id")
     var responsiblePerson: User ? = null

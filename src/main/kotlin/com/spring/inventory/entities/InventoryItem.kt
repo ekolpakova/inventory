@@ -75,7 +75,6 @@ class InventoryItem {
     @JoinColumn(name = "fix_id")
     var fix: Fix ? = null
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     var responsiblePerson: User ? = null
