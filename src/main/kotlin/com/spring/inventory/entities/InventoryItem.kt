@@ -36,9 +36,6 @@ class InventoryItem {
     @Column(name = "specs")
     var specs: String? = null
 
-    @Column(name = "belongs_to")
-    var belongsTo: Int? = null
-
     @Column(name = "given")
     var given: Boolean? = null
 
@@ -78,6 +75,10 @@ class InventoryItem {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     var responsiblePerson: User ? = null
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "belongs_to_id")
+    var belongsTo: BelongsTo ? = null
 
     @Column(name = "number_in_classroom")
     var numberInClassroom: String? = null
